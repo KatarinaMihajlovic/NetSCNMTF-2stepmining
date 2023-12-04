@@ -92,7 +92,7 @@ def BarPlotValidGenes(PDpreds_enrich, file_out):
     p_vals.insert(1, p_vals[-1])
     p_vals.pop(-1)
     
-    cc_pairs = ['PD_0','PD_6','PD_15','PD_21']
+    # cc_pairs = ['PD_0','PD_6','PD_15','PD_21']
     
     width = 0.3    
     opacity = 0.7
@@ -361,7 +361,7 @@ for root, dirs, files in os.walk(f'input/{preds_dir}'):
             PDGs2Background_dist(cc1cc2_pubmed, StageSpecPreds_pubmed, day, save_dir, set2_label='Stage Spec PD preds')
             
             ### check enrichment of PD preds with PD proof from Pubmed and Gene4PD, 
-            case = filen.split('_')[0]
+            case = filen.split('_')[2]
             outf.write(f'{filen}\n')
 
             LitEnr_genes = LitEnrich(cc1cc2_LitValid, cc1cc2_PDpreds_LitValid, outf, case)
@@ -427,7 +427,7 @@ PDGs2Background_dist(CGs_PD_preds_pubmed, OtherGenes_pubmed, 'LIGERIntersection'
 ### check enrichment of Cire PD preds with PD proof from Pubmed and Gene4PD, 
 file_out = 'LIGERIntersection_LitValid_Enirch.txt'
 outf = open(f'{save_dir}/{file_out}','w')
-LitEnr_genes = LitEnrich(All_CommonGenes_LitValid, CGs_PD_preds_LitValid, outf, 'Core PD preds')
+LitEnr_genes = LitEnrich(All_CommonGenes_LitValid, CGs_PD_preds_LitValid, outf, 'LIGERIntersection')
 outf.close()
 
 # plot Lit enrichment of Core pd preds 
@@ -469,11 +469,4 @@ for rect in bar1:
 plt.savefig(f'{save_dir}/LitValid_Enrich.jpg',  dpi = 350, format='jpg', bbox_inches='tight')	
 plt.show()
 plt.close()
-
-  
-
-  
-
-
-
 
