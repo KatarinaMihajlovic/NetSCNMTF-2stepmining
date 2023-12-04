@@ -46,7 +46,7 @@ km_runs = 10
 for root, dirs, files in os.walk(in_dir):
     for file in files:
         print(file)
-        cell_cond = root.split('\\')[1]
+        cell_cond = root.split(os.sep)[1]
         nets = file.split('_')[0]
         G1_df = pd.read_csv(f'{root}/{file}', header=0, index_col=0, sep='\t')
         G1_NumClusters = len(list(G1_df.columns))
