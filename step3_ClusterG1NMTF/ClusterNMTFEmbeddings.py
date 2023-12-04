@@ -21,7 +21,7 @@ def kMeans(M, nodes, n_clusters):
     nodes2coordinates = dict(zip(nodes, M))  
     Cluster_belonging = {k: [] for k in range(n_clusters)}
     
-    kMeans = KMeans(n_clusters=n_clusters, init = 'random').fit(M)
+    kMeans = KMeans(n_clusters=n_clusters, init = 'random', n_init=10).fit(M)
     KMeans_labels = list(kMeans.labels_)
     
     for cluster_index in range(len(KMeans_labels)):
