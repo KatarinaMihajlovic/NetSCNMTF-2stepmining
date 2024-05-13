@@ -1,4 +1,3 @@
-#import networkx as nx
 import math, json
 from scipy.stats import hypergeom
 import numpy as np
@@ -7,6 +6,8 @@ import os.path
 import pandas as pd
 from matplotlib_venn import venn2
 from matplotlib.cm import ScalarMappable
+from goatools.obo_parser import GODag
+import pickle
 
 
 def parseKEGGCats(file, KEGG2names):
@@ -327,12 +328,49 @@ def write_txt_enrRes(enrRes_dict, sd, save_file, save_ext):
             f.write('\n')
     return enr_terms
  
+def EnrichmentBarPlot(terms_genes_count_p, title, save_file):
+  
+    terms_genes_count_p.sort(key=lambda x: x[1], reverse = False)
+    terms_genes_count_p_t10 = terms_genes_count_p[:10]
+    y_pos = np.arange(len(terms_genes_count_p_t10))
+    data_color = [x[1] for x in terms_genes_count_p_t10]
+    data_color.reverse()
+    Keggs = [x[0] for x in terms_genes_count_p_t10]
+    Keggs.reverse()
+    GC = [x[2] for x in terms_genes_count_p_t10]
+    GC.reverse()
+      
+    
+    fig, ax = plt.subplots(figsize=(13, 9))
+    ax.set_yticks(y_pos, labels=Keggs, fontsize = 28)
+    ax.set_xlabel('Gene Count', fontsize = 32)
+    plt.xticks(fontsize=22)
+    ax.set_title(title, fontsize=34, fontweight = 'bold', pad=25, x=-0.3, y=1.02)
+    my_cmap = plt.colormaps.get_cmap("plasma")
+    rescale = lambda data_color: (data_color - np.min(data_color)) / (np.max(data_color) - np.min(data_color))
+    colors = my_cmap(rescale(data_color))
+    ax.barh(y_pos, GC, color=colors, align='center')
+    sm = ScalarMappable(cmap=my_cmap, norm=plt.Normalize(min(data_color),max(data_color)))
+    sm.set_array([])
+    # fig.colorbar(sm)
+    ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
+
+    cbaxes = fig.add_axes([1.05, 0.1, 0.03, 0.8])  
+    cbar = plt.colorbar(sm,ax = [ax], cax = cbaxes)
+    cbar.set_label('p.adjust', rotation=270,labelpad=30, fontsize = 32)
+    cbar.ax.tick_params(labelsize=22)
+    cbar.ax.yaxis.offsetText.set(size=22)
+    # xint = range(min(GC), math.ceil(max(GC))+1)
+    # plt.xticks(xint)    
+    plt.tight_layout(pad=1)
+    plt.savefig(save_file, dpi = 350, bbox_inches='tight', format='jpg')
+    plt.show()
+    plt.close()
+
     
 """
 	Main code starts here
 """
-from goatools.obo_parser import GODag
-import pickle
 
 indir = 'input'
 godag = GODag(obo_file="input/go-basic.obo") 
@@ -446,40 +484,7 @@ PDGenes_KEGGSubGroups = KEGGSubCats(sd, KP_termsmeaning_2sets[1])
 
 
 # plot enrichments in a horizontal color bar
-
-terms_genes_count_p.sort(key=lambda x: x[1], reverse = False)
-terms_genes_count_p_t10 = terms_genes_count_p[:10]
-y_pos = np.arange(len(terms_genes_count_p_t10))
-data_color = [x[1] for x in terms_genes_count_p_t10]
-data_color.reverse()
-Keggs = [x[0] for x in terms_genes_count_p_t10]
-Keggs.reverse()
-GC = [x[2] for x in terms_genes_count_p_t10]
-GC.reverse()
-  
-
-fig, ax = plt.subplots(figsize=(13, 9))
-ax.set_yticks(y_pos, labels=Keggs, fontsize = 28)
-ax.set_xlabel('Gene Count', fontsize = 32)
-plt.xticks(fontsize=22)
-ax.set_title('Top 10 most significantly enriched KEGG pathways', fontsize=34, fontweight = 'bold', pad=25, x=-0.3, y=1.02)
-my_cmap = plt.colormaps.get_cmap("plasma")
-rescale = lambda data_color: (data_color - np.min(data_color)) / (np.max(data_color) - np.min(data_color))
-colors = my_cmap(rescale(data_color))
-ax.barh(y_pos, GC, color=colors, align='center')
-sm = ScalarMappable(cmap=my_cmap, norm=plt.Normalize(min(data_color),max(data_color)))
-sm.set_array([])
-# fig.colorbar(sm)
-cbaxes = fig.add_axes([1.05, 0.1, 0.03, 0.8])  
-cbar = plt.colorbar(sm,ax = [ax], cax = cbaxes)
-cbar.set_label('p.adjust', rotation=270,labelpad=30, fontsize = 32)
-cbar.ax.tick_params(labelsize=22)
-cbar.ax.yaxis.offsetText.set(size=22)
-plt.tight_layout(pad=1)
-plt.savefig('output/CorePreds/EnrichmentKEGG_hbar_CorePreds.jpg', dpi = 350, bbox_inches='tight', format='jpg')
-plt.show()
-plt.close()
-
+EnrichmentBarPlot(terms_genes_count_p, 'Top 10 most significantly enriched KEGG pathways', 'output/CorePreds/EnrichmentKEGG_hbar_CorePreds.jpg')
 
 
 ### enrichment in PD map pathways
@@ -536,4 +541,70 @@ EnrClsts_PDmap = {v: k for v, k in enumerate(bh_PDmap)}
 enr_PDmap_terms = write_txt_enrRes(EnrClsts_PDmap, sd, save_file, save_ext='PDmap')        
 
 
+
+# Enrichment pathways unique for CorePreds and DEGs
+with open('input/CorePreds_LitValid.pkl', 'rb') as handle:
+    CorePreds = pickle.load(handle)  
+with open('input/DEGs_Skupin.txt', 'r') as file:
+    DEGs = [line.strip() for line in file.readlines()]
+
+
+CorePreds_unique = list(set(CorePreds)-set(DEGs))
+DEGs_unique = list(set(DEGs)-set(CorePreds))
+DEGs_unique = [gene for gene in DEGs_unique if gene in All_genes_Union]
+cases = ['CorePreds_unique','DEGs_unique']
+gene_sets = [CorePreds_unique, DEGs_unique]
+
+
+for i in range(len(gene_sets)):
+    case = cases[i]
+    sd = f'output/UniqueDEGsCorePDpreds/{case}'
+    if not os.path.exists(sd):
+        os.makedirs(sd) 
+
+    # KEGG enrichment
+    bh_kp, mne_kp, eg_kp, perc_cluster_kp, enriched_genes_kp = go_enrichment([gene_sets[i]], gene2go_kp, go_counts_kp)      
+    enriched_genes_kp = enriched_genes_kp[0]
+    KP_terms = [[i[0] for i in nested] for nested in bh_kp]
+    KP_terms_p = [[i[1] for i in nested] for nested in bh_kp][0]
+
+           
+    #write KEGG terms
+    KP_terms_meaning = []
+    for KP_term in KP_terms[0]:
+        try:
+            KP_terms_meaning.append(KEGG2names[KP_term])
+        except KeyError:
+            pass
+    KP_terms_meaning_p =  [list(i) for i in zip(KP_terms_meaning, KP_terms_p)]
+    KP_terms_meaning_p.sort(key = lambda x: x[1])
+        
+    with open(f'{sd}/{case}_KPmeaning.txt', 'w') as f: 
+        for j in range(len(KP_terms_meaning_p)):
+            term = KP_terms_meaning_p[j][0]
+            p = KP_terms_meaning_p[j][1]
+            f.write(f'{term}\t{p}\n')
+                      
+    terms_genes = []
+    terms_genes_count_p = []
+
+    for term in KP_terms[0]:
+        term_genes = []
+        for gene, KP_terms_d in gene2go_kp.items():  
+            if term in KP_terms_d and gene in gene_sets[i]:
+                term_genes.append(gene)                                
+        terms_genes.append([term, term_genes])
+        for term_p in KP_terms_meaning_p:
+            # print(term_p, term)
+            try:
+                if KEGG2names[term] == term_p[0]:
+                    terms_genes_count_p.append([KEGG2names[term][:-3], term_p[1], len(term_genes)])
+            except Exception:
+                pass
+
+    EnrichmentBarPlot(terms_genes_count_p, '', f'{sd}/EnrichmentKEGG_hbar_{case}.jpg')
+        
+        
+
+    
         
