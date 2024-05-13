@@ -18,7 +18,12 @@ In particular, you will find:
   - [step2_IdentifyBestk1k2](https://github.com/KatarinaMihajlovic/PD-Genes/tree/main/auxStep_Bestk1k2/step2_IdentifyBestk1k2) that contains the code which visualizes 
 the dispersion coefficients of different k<sub>1</sub> and k<sub>2</sub> values, allowing us to choose k<sub>1</sub> and k<sub>2</sub> that lead to high dispersion coefficients
 
-IMPORTANT NOTE: It may be necessary to individually download step1_CreateInputNetworksMatrices/input/ExpressionMatrix/Normalized_data.zip file. Downloading the entire NetSCNMTF-2stepmining repository as zip seems to further compress the Normalized_data.zip file, deleting the contents inside.
+- one folder [auxStep_AdditionalExperiments](https://github.com/KatarinaMihajlovic/PD-Genes/tree/main/auxStep_AdditionalExperiments) that contains scripts for performing robustness analyses and additional validation experiments
+     
+IMPORTANT NOTES: 
+- It may be necessary to individually download step1_CreateInputNetworksMatrices/input/ExpressionMatrix/Normalized_data.zip file. Downloading the entire NetSCNMTF-2stepmining repository as zip seems to further compress the Normalized_data.zip file, deleting the contents inside.
+- Scripts containing "slurm" in their title are designed to run on a system that supports such batch processing.
+
 
 ### How to run the notebook
 pip install -r requirements.txt
