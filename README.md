@@ -29,6 +29,7 @@ IMPORTANT NOTES:
 pip install -r requirements.txt
 
 Execute the jupyter notebook [MethodologicalFramework_StepbyStep.ipynb](https://github.com/KatarinaMihajlovic/PD-Genes/blob/main/MethodologicalFramework_StepbyStep.ipynb) 
+
 Note that Windows users need to have bash on their system.
 
 ### Referencing
