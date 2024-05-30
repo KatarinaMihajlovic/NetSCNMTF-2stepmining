@@ -28,7 +28,10 @@ IMPORTANT NOTES:
 ### How to run the notebook
 pip install -r requirements.txt
 
+Execute the jupyter notebook [MethodologicalFramework_StepbyStep.ipynb](https://github.com/KatarinaMihajlovic/PD-Genes/blob/main/MethodologicalFramework_StepbyStep.ipynb) 
 Note that Windows users need to have bash on their system.
 
-Execute the jupyter notebook [MethodologicalFramework_StepbyStep.ipynb](https://github.com/KatarinaMihajlovic/PD-Genes/blob/main/MethodologicalFramework_StepbyStep.ipynb) 
+### Referencing
+If you use this code or find it helpful in your research, please consider citing:
+Mihajlović, Katarina, et al. "Multi-omics integration of scRNA-seq time series data predicts new intervention points for Parkinson’s disease." Scientific Reports 14.1 (2024): 10983. [Link]([https://www.example.com/paper](https://doi.org/10.1038/s41598-024-61844-3)
 
