@@ -33,5 +33,5 @@ Note that Windows users need to have bash on their system.
 
 ### Referencing
 If you use this code or find it helpful in your research, please consider citing:
-Mihajlović, Katarina, et al. "Multi-omics integration of scRNA-seq time series data predicts new intervention points for Parkinson’s disease." Scientific Reports 14.1 (2024): 10983. [Link]([https://www.example.com/paper](https://doi.org/10.1038/s41598-024-61844-3)
+Mihajlović, Katarina, et al. "Multi-omics integration of scRNA-seq time series data predicts new intervention points for Parkinson’s disease." Scientific Reports 14.1 (2024): 10983. [Link](https://doi.org/10.1038/s41598-024-61844-3)
 
